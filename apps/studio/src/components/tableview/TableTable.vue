@@ -585,7 +585,7 @@ export default Vue.extend({
       return results
     },
 
-       tableId() {
+    tableId() {
       // the id for a tabulator table
       if (!this.usedConfig.id) return null;
       return `workspace-${this.workspaceId}.connection-${this.usedConfig.id}.db-${this.database || 'none'}.schema-${this.table.schema || 'none'}.table-${this.table.name}`
