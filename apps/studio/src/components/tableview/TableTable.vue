@@ -586,28 +586,16 @@ export default Vue.extend({
     },
 
     tableId() {
-      // the id for a tabulator table
-      if (!this.usedConfig.id) return null;
-      return `workspace-${this.workspaceId}.connection-${this.usedConfig.id}.db-${this.database || 'none'}.schema-${this.table.schema || 'none'}.table-${this.table.name}`
-    },
-    initialSort() {
-      // FIXME: Don't specify an initial sort order
-      // because it can slow down some databases.
-      // However - some databases require an 'order by' for limit, so needs some
-      // integration tests first.
-      if (!this.table?.columns?.length) {
-        return [];
-      }
-
-      if (this.dialectData.disabledFeatures?.initialSort) {
-        return [];
-      }
-
-      return [{ column: this.table.columns[0].columnName, dir: "asc" }];
-    },
-    shouldInitialize() {
-      return this.tablesInitialLoaded && this.active && !this.initialized
-    },
+  // the id for a tabulator table
+  if (!this.usedConfig.id) return null;
+  return `workspace-${this.workspaceId}.connection-${this.usedConfig.id}.db-${this.database || 'none'}.schema-${this.table.schema || 'none'}.table-${this.table.name}`
+},
+initialSort() {
+  return [];
+},
+shouldInitialize() {
+  return this.tablesInitialLoaded && this.active && !this.initialized
+},
     columnFilterModalName() {
       return `column-filter-modal-${this.tableId}`
     },
