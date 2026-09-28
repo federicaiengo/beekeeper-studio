@@ -169,4 +169,61 @@ describe("TableTable.vue — refreshTable re-fetches columns (#4567)", () => {
       // sibling method refreshTable calls:
       getTableKeys: jest.fn().mockResolvedValue(undefined),
       // the store dispatch we are asserting on:
-      $store: { dispatch: jest.fn().
+      $store: { dispatch: jest.fn().mockResolvedValue(undefined) },
+    };
+  }
+
+  it("dispatches updateTableColumns on explicit refresh (issue-4567)", async () => {
+    const table = { name: "t", schema: "public", columns: [{ columnName: "c" }] };
+    const ctx = makeRefreshCtx({ table });
+
+    await refreshTable.call(ctx);
+
+    expect(ctx.$store.dispatch).toHaveBeenCalledWith("updateTableColumns", table);
+  });
+});
+
+// Regression coverage for #1417 / #1521.
+// Opening a table or view should not impose a remote sort on the first column.
+describe("TableTable.vue — initialSort (#1417, #1521)", () => {
+  const initialSort = (TableTable as any).options.computed.initialSort;
+
+  it("does not apply an implicit first-column sort", () => {
+    expect(initialSort.call({})).toEqual([]);
+  });
+});
+
+describe("TableTable.vue — loadPersistence filters by tableId", () => {
+  beforeEach(async () => {
+    await TestOrmConnection.connect();
+  });
+
+  afterEach(async () => {
+    await TestOrmConnection.disconnect();
+  });
+
+  it("reads back the layout persisted for this table", async () => {
+    // public.one has to land first: the bug returned whichever row was
+    // inserted first, whatever table was asked for.
+    const one = mountTableTable("one");
+    await one.persistenceWriter(one.tableId, "columns", ["one"]);
+
+    const two = mountTableTable("two");
+    await two.persistenceWriter(two.tableId, "columns", ["two"]);
+
+    const vm = mountTableTable("two");
+    await vm.loadPersistence();
+
+    expect(vm.persistenceReader(vm.tableId, "columns")).toEqual(["two"]);
+  });
+
+  it("reads back nothing when this table has no persisted layout", async () => {
+    const one = mountTableTable("one");
+    await one.persistenceWriter(one.tableId, "columns", ["one"]);
+
+    const vm = mountTableTable("other");
+    await vm.loadPersistence();
+
+    expect(vm.persistenceReader(vm.tableId, "columns")).toBe(false);
+  });
+});
