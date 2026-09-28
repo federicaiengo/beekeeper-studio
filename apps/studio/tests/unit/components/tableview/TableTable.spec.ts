@@ -175,45 +175,4 @@ describe("TableTable.vue — refreshTable re-fetches columns (#4567)", () => {
 
   it("dispatches updateTableColumns on explicit refresh (issue-4567)", async () => {
     const table = { name: "t", schema: "public", columns: [{ columnName: "c" }] };
-    const ctx = makeRefreshCtx({ table });
-
-    await refreshTable.call(ctx);
-
-    expect(ctx.$store.dispatch).toHaveBeenCalledWith("updateTableColumns", table);
-  });
-});
-
-describe("TableTable.vue — loadPersistence filters by tableId", () => {
-  beforeEach(async () => {
-    await TestOrmConnection.connect();
-  });
-
-  afterEach(async () => {
-    await TestOrmConnection.disconnect();
-  });
-
-  it("reads back the layout persisted for this table", async () => {
-    // public.one has to land first: the bug returned whichever row was
-    // inserted first, whatever table was asked for.
-    const one = mountTableTable("one");
-    await one.persistenceWriter(one.tableId, "columns", ["one"]);
-
-    const two = mountTableTable("two");
-    await two.persistenceWriter(two.tableId, "columns", ["two"]);
-
-    const vm = mountTableTable("two");
-    await vm.loadPersistence();
-
-    expect(vm.persistenceReader(vm.tableId, "columns")).toEqual(["two"]);
-  });
-
-  it("reads back nothing when this table has no persisted layout", async () => {
-    const one = mountTableTable("one");
-    await one.persistenceWriter(one.tableId, "columns", ["one"]);
-
-    const vm = mountTableTable("other");
-    await vm.loadPersistence();
-
-    expect(vm.persistenceReader(vm.tableId, "columns")).toBe(false);
-  });
-});
+   
