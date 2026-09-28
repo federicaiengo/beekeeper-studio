@@ -169,10 +169,4 @@ describe("TableTable.vue — refreshTable re-fetches columns (#4567)", () => {
       // sibling method refreshTable calls:
       getTableKeys: jest.fn().mockResolvedValue(undefined),
       // the store dispatch we are asserting on:
-      $store: { dispatch: jest.fn().mockResolvedValue(undefined) },
-    };
-  }
-
-  it("dispatches updateTableColumns on explicit refresh (issue-4567)", async () => {
-    const table = { name: "t", schema: "public", columns: [{ columnName: "c" }] };
-   
+      $store: { dispatch: jest.fn().
